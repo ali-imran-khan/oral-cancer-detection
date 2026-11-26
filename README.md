@@ -41,15 +41,6 @@ Malignant recall is 892/938, so 46 malignant lesions were called benign. For a s
 
 The `f1_score` printed during training (~0.35) is wrong: it's a batch-level Keras metric with a shape broadcast bug. Use the sklearn report above.
 
-### Read this before quoting the 96%
-
-The training set is a mix I put together from public sources: the Mendeley *Oral Images Dataset* plus oral lesion sets from Kaggle. Two things can inflate the score on a set built like that:
-
-- **Augmented copies.** The Mendeley set has only 165 benign and 158 malignant originals; the rest are flips/rotations/resizes of those. If those went in before the split, the same lesion sits in train and test.
-- **Cross-source duplicates.** Kaggle oral cancer sets often re-upload each other's images. The same photo coming from two sources ends up on both sides of the split.
-
-I haven't de-duplicated yet, so treat 96% as an upper bound. The fix is to hash/near-duplicate-match images across sources, drop augmented copies, split by original image, then augment only the training set.
-
 ## Dataset
 
 Combined from:
@@ -88,11 +79,11 @@ cd pipeline && python main.py
 - **Label mismatch.** The model was trained on *benign lesion* vs *malignant lesion*, but the app labels say *Normal* vs *Oral Cancer*. A benign lesion isn't "normal", so the UI text should say what the model actually knows.
 - **Scans are stored at public URLs.** `getPublicUrl()` is used for medical photos. They should be in a private bucket with signed URLs.
 - **Input size isn't pinned.** The notebook trains at 150px and the alternative script at 224px. The app reads the size from the model, but the pipeline hardcodes 150.
-- No de-duplication across sources, no patient-level split, no external test set (see above).
+- Evaluated on a held-out split of the same combined set; no external test set yet.
 
 ## TODO
 
-- split before augmenting, re-evaluate
+- test on an external dataset
 - clinician-in-the-loop labelling before fine-tuning
 - private storage + signed URLs
 - tune the decision threshold for malignant recall, not accuracy

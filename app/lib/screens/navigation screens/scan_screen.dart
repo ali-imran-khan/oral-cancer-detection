@@ -688,7 +688,6 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
             ),
           ),
 
-          // Pinch to zoom hint removed
         ],
       )
           : const Center(

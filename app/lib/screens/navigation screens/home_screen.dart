@@ -143,13 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ...existing code...
             Text('Oral Health Scanner', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 4),
             Text('Early detection for better oral health', style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 24),
 
-            // ...existing code...
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -187,7 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // ...existing code...
             Row(
               children: [
                 Expanded(
@@ -303,7 +300,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // ...existing code...
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),

@@ -28,18 +28,14 @@ class OralCancerModel {
     final rawOutput = outputBuffer[0][0];
     double probability;
     
-    // Check if the output is already a probability (between 0 and 1)
-    // or if it's a logit that needs sigmoid activation
+    // older exports gave logits, newer ones sigmoid output
     if (rawOutput >= 0.0 && rawOutput <= 1.0) {
-      // Output is already a probability
       probability = rawOutput;
     } else {
-      // Output is a logit, apply sigmoid
       double sigmoid(double x) => 1 / (1 + math.exp(-x));
       probability = sigmoid(rawOutput);
     }
 
-    // Ensure we have exactly 2 labels for binary classification
     List<String> binaryLabels;
     if (labels.length >= 2) {
       binaryLabels = [labels[0].trim(), labels[1].trim()];
@@ -47,18 +43,14 @@ class OralCancerModel {
       // If only one label, assume it's "Normal" and add "Oral Cancer"
       binaryLabels = [labels[0].trim(), 'Oral Cancer'];
     } else {
-      // Default labels
       binaryLabels = ['Normal', 'Oral Cancer'];
     }
     
-    // For binary classification:
-    // probability > 0.5 means positive class (usually index 1)
-    // probability <= 0.5 means negative class (usually index 0)
+    // p > 0.5 -> labels[1]
     
     List<Map<String, dynamic>> results = [];
     
     if (probability > 0.5) {
-      // Positive prediction (second class)
       results.add({
         'label': binaryLabels[1],
         'confidence': probability,
@@ -68,7 +60,6 @@ class OralCancerModel {
         'confidence': 1.0 - probability,
       });
     } else {
-      // Negative prediction (first class)
       results.add({
         'label': binaryLabels[0],
         'confidence': 1.0 - probability,
@@ -84,7 +75,6 @@ class OralCancerModel {
 
   List<List<List<List<double>>>> imageToByteBuffer(img.Image originalImage) {
     
-    // Get expected input dimensions from the model
     final inputTensor = _interpreter.getInputTensor(0);
     final inputShape = inputTensor.shape;
     final expectedHeight = inputShape[1];
@@ -99,7 +89,6 @@ class OralCancerModel {
     );
     
     
-    // Convert to the expected format
     final buffer = List.generate(
       1, // batch size
       (_) => List.generate(
@@ -109,12 +98,11 @@ class OralCancerModel {
           (x) {
             final pixel = resizedImage.getPixel(x, y);
 
-            // Access RGB channels directly
             final r = pixel.r;
             final g = pixel.g;
             final b = pixel.b;
             
-            // Normalize to [0, 1] range
+            // /255, same as training
             return [
               r / 255.0,
               g / 255.0,

@@ -248,7 +248,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       await _authService.resetPassword(_emailController.text.trim());
       setState(() => _isLoading = false);
       
-      // Show success dialog instead of snackbar for better UX
+      // success dialog
         if (!mounted) return;
         showDialog(
           context: context,

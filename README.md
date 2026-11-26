@@ -43,11 +43,21 @@ The `f1_score` printed during training (~0.35) is wrong: it's a batch-level Kera
 
 ### Read this before quoting the 96%
 
-The Mendeley *Oral Images Dataset* has **165 benign and 158 malignant original images**. The rest of the folder is augmented copies (flips, rotations, resizes) of those same images. The notebook trained on about 9.5k images, so it either used the augmented set or a different source. If augmented copies were split *after* augmentation, versions of the same lesion end up in both train and test, and the 96% is inflated. The honest next step is to split by original image first, augment only the training set, and re-run.
+The training set is a mix I put together from public sources: the Mendeley *Oral Images Dataset* plus oral lesion sets from Kaggle. Two things can inflate the score on a set built like that:
+
+- **Augmented copies.** The Mendeley set has only 165 benign and 158 malignant originals; the rest are flips/rotations/resizes of those. If those went in before the split, the same lesion sits in train and test.
+- **Cross-source duplicates.** Kaggle oral cancer sets often re-upload each other's images. The same photo coming from two sources ends up on both sides of the split.
+
+I haven't de-duplicated yet, so treat 96% as an upper bound. The fix is to hash/near-duplicate-match images across sources, drop augmented copies, split by original image, then augment only the training set.
 
 ## Dataset
 
-Chandrashekar H S et al., *Oral Images Dataset*, Mendeley Data, v2, 2021. DOI: [10.17632/mhjyrn35p4.2](https://data.mendeley.com/datasets/mhjyrn35p4/2). Images were collected from hospitals in Karnataka, India, with mobile and intraoral cameras. The dataset isn't redistributed here. Put it in `data/original/{benign_lesions,malignant_lesions}` and run `preprocessing/split_dataset.py`.
+Combined from:
+
+- Chandrashekar H S et al., *Oral Images Dataset*, Mendeley Data v2 (2021), DOI [10.17632/mhjyrn35p4.2](https://data.mendeley.com/datasets/mhjyrn35p4/2): mobile/intraoral photos from hospitals in Karnataka, India
+- public oral cancer / lesion image sets from Kaggle
+
+Not redistributed here, since each source has its own license. Put the merged images in `data/original/{benign_lesions,malignant_lesions}` and run `preprocessing/split_dataset.py`.
 
 ## Running it
 
@@ -78,7 +88,7 @@ cd pipeline && python main.py
 - **Label mismatch.** The model was trained on *benign lesion* vs *malignant lesion*, but the app labels say *Normal* vs *Oral Cancer*. A benign lesion isn't "normal", so the UI text should say what the model actually knows.
 - **Scans are stored at public URLs.** `getPublicUrl()` is used for medical photos. They should be in a private bucket with signed URLs.
 - **Input size isn't pinned.** The notebook trains at 150px and the alternative script at 224px. The app reads the size from the model, but the pipeline hardcodes 150.
-- No patient-level split and no external test set (see above).
+- No de-duplication across sources, no patient-level split, no external test set (see above).
 
 ## TODO
 
@@ -87,6 +97,6 @@ cd pipeline && python main.py
 - private storage + signed URLs
 - tune the decision threshold for malignant recall, not accuracy
 
-## Team
+## Author
 
-<!-- TODO: names + who did what -->
+Solo project: dataset assembly, training, the Flutter app, Supabase setup and the fine-tune pipeline.

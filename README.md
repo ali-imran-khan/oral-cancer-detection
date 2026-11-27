@@ -88,6 +88,10 @@ cd pipeline && python main.py
 - private storage + signed URLs
 - tune the decision threshold for malignant recall, not accuracy
 
-## Author
+## Team
 
-Solo project: dataset assembly, training, the Flutter app, Supabase setup and the fine-tune pipeline.
+This was a team project.
+
+- **Muhammad Ali Imran Khan**: all the technical work. Dataset assembly, model training, the Flutter app, Supabase setup and the fine-tune pipeline.
+- **Two doctors on the team**: the clinical side of the presentation at SIMPACT 2025.
+- **A mentor**: guidance and advice on direction through the project.
